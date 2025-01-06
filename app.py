@@ -27,8 +27,8 @@ The web app is hosted on a free tier of shinyapps.io.
 """
 
 INTRO = """
-This app is based on a 
-[ciw example](https://health-data-science-or.github.io/simpy-streamlit-tutorial/content/03_streamlit/13_ciw_backend.html) 
+This app is based on a
+[ciw example](https://health-data-science-or.github.io/simpy-streamlit-tutorial/content/03_streamlit/13_ciw_backend.html)
 that simulates a simple call centre model.
 """
 
@@ -55,7 +55,7 @@ This work is produced using entirely free and open-source software in python.
 
 > This model is independent research supported by the National Institute for
 Health Research Applied Research Collaboration South West Peninsula. The views
-expressed in this publication are those of the author(s) and not necessarily 
+expressed in this publication are those of the author(s) and not necessarily
 those of the National Institute for Health Research or the Department of Health
 and Social Care.
 """
@@ -73,7 +73,7 @@ https://ciw.readthedocs.io
 DOCS_LINK = """
 ## Model Documentation
 
-Live documentation including STRESS-DES reporting for the model and 
+Live documentation including STRESS-DES reporting for the model and
 is available at: https://pythonhealthdatascience.github.io/stars-ciw-example/
 """
 
@@ -130,7 +130,7 @@ app_ui = ui.page_fluid(
             # Button to navigate to GitHub code
             ui.input_action_button(
                 id="github_btn",
-                label="View code on GitHub" ,  
+                label="View code on GitHub" ,
                 icon=icon_svg("github")
             ),
             ui.tags.script(f"""
@@ -141,7 +141,7 @@ app_ui = ui.page_fluid(
             # Button to view model documentation
             ui.input_action_button(
                 id="docs_btn",
-                label="View model documentation" ,  
+                label="View model documentation" ,
                 icon=icon_svg("book")
             ),
             ui.tags.script(f"""
@@ -160,11 +160,11 @@ app_ui = ui.page_fluid(
     # Sidebar and main panel
     ui.navset_tab(
         # Panel for the simulation page
-        ui.nav_panel("Interactive simulation", 
+        ui.nav_panel("Interactive simulation",
             ui.layout_sidebar(
                 # Sidebar content
                 ui.sidebar(
-                    
+
                     # Number of call operators
                     ui.tooltip(
                         ui.input_slider(id="n_operators",
@@ -282,7 +282,7 @@ def server(input: Inputs, output: Outputs, session: Session):
         user_experiment = Experiment(n_operators=input.n_operators(),
                                      n_nurses=input.n_nurses(),
                                      chance_callback=input.chance_callback())
-        
+
         # run multiple replications
         results, logs = multiple_replications(user_experiment, n_reps=input.n_reps())
 
@@ -300,7 +300,7 @@ def server(input: Inputs, output: Outputs, session: Session):
     def summary_results(replications):
         '''
         Convert the replication results into a summary table
-        
+
         Returns:
         -------
         pd.DataFrame
@@ -308,35 +308,35 @@ def server(input: Inputs, output: Outputs, session: Session):
         summary = replications.describe().round(2).T
 
         # Set index as a column
-        summary = summary.reset_index() 
+        summary = summary.reset_index()
         summary = summary.rename(columns={'index': 'metric'})
 
         # Drop count, as that is implicit from chosen number of replications
         summary = summary.drop('count', axis=1)
 
         return summary
-    
+
     def create_user_filtered_hist(results):
         '''
         Create a plotly histogram that includes a drop down list that allows a user
         to select which key performance indicator (KPI) is displayed as a histogram
-        
+
         Params:
         -------
         results: pd.Dataframe
             rows = replications, cols = KPIs
-            
+
         Returns:
         -------
         plotly.figure
-        
+
         Sources:
         ------
         The code in this function was partly adapted from two sources:
         1. https://stackoverflow.com/questions/59406167/plotly-how-to-filter-a-pandas-dataframe-using-a-dropdown-menu
-        
+
         Thanks and credit to `vestland` the author of the reponse.
-        
+
         2. https://plotly.com/python/dropdowns/
         '''
         # Create figure with first metric column by default
@@ -345,7 +345,7 @@ def server(input: Inputs, output: Outputs, session: Session):
             # Label when hover over bar, with <extra></extra> preventing it
             # from appending "trace 0" to the end
             hovertemplate='Result of %{x} was found in %{y} replications<extra></extra>')])
-        
+
         # Create dropdown menu to choose between metric columns to plot
         buttons = []
         for col in results.columns:
@@ -376,7 +376,7 @@ def server(input: Inputs, output: Outputs, session: Session):
 
             # Hide the legend
             showlegend=False,
-   
+
             xaxis=dict(
                 # Add a X axis label
                 title=results.columns[0]),  # Initially set to first metric
@@ -426,7 +426,7 @@ def server(input: Inputs, output: Outputs, session: Session):
         Produces a summary table of results (mean, median, std, etc.)
         '''
         return summary_results(replication_results())
-    
+
     @render.text
     @reactive.event(input.run_sim)
     def result_graph_info():
@@ -469,7 +469,7 @@ def server(input: Inputs, output: Outputs, session: Session):
         '''
         Runs simulation model when button is clicked.
         This is a reactive effect. Once replication_results
-        is set it invalidates results_table and histogram.  
+        is set it invalidates results_table and histogram.
         These are rerun by Shiny
         '''
         # set to empty - forces shiny to dim output widgets
