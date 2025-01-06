@@ -39,29 +39,29 @@ event_log_test.head(25)
 
 event_position_df = pd.DataFrame([
                     {'event': 'arrival',
-                     'x':  50, 'y': 300,
+                     'x':  30, 'y': 350,
                      'label': "Arrival"},
 
                     {'event': 'operator_wait_begins',
-                     'x':  205, 'y': 170,
+                     'x':  205, 'y': 270,
                      'label': "Waiting for Operator"},
 
                     {'event': 'operator_begins',
-                     'x':  205, 'y': 110,
+                     'x':  205, 'y': 210,
                      'resource':'n_operators',
                      'label': "Speaking to operator"},
 
                     {'event': 'nurse_wait_begins',
-                     'x':  205, 'y': 270,
+                     'x':  205, 'y': 110,
                      'label': "Waiting for Nurse"},
 
                     {'event': 'nurse_begins',
-                     'x':  205, 'y': 210,
+                     'x':  205, 'y': 50,
                      'resource':'n_nurses',
                      'label': "Speaking to Nurse"},
 
                     {'event': 'exit',
-                     'x':  270, 'y': 70,
+                     'x':  270, 'y': 10,
                      'label': "Exit"}
 
                 ])
@@ -78,20 +78,21 @@ animate_activity_log(
         event_log=event_log_test,
         event_position_df= event_position_df,
         scenario=model_params(),
-        debug_mode=False,
+        debug_mode=True,
+        setup_mode=False,
         every_x_time_units=1,
         include_play_button=True,
         icon_and_text_size=20,
-        gap_between_entities=6,
-        gap_between_rows=15,
+        gap_between_entities=8,
+        gap_between_rows=25,
         plotly_height=700,
         frame_duration=200,
         plotly_width=1200,
         override_x_max=300,
-        override_y_max=500,
+        # override_y_max=400,
         limit_duration=RESULTS_COLLECTION_PERIOD,
         wrap_queues_at=25,
-        step_snapshot_max=125,
+        step_snapshot_max=75,
         time_display_units="dhm",
         display_stage_labels=True,
     )
