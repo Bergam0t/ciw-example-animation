@@ -1,3 +1,22 @@
+This repository takes the ciw version of the sample 111 model from STARS and explores building a [vidigi](https://github.com/Bergam0t/vidigi) animation within it.
+
+
+Key changes made:
+
+- return the output of `sim_engine.get_all_records()` from the `single_run` method
+- update `multiple_replications` method to extract and return these logs
+- write a new `event_log_from_ciw_recs` function to take the output from a single run and produce an event_log dataframe in the order vidigi is expecting
+
+TODO:
+- docstring for `event_log_from_ciw_recs` function
+- add a background to the animation
+- incorporate the animation into the app
+
+# Original Repository readme below this line
+
+---
+
+
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pythonhealthdatascience/stars-ciw-examplar/HEAD)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10051494.svg)](https://doi.org/10.5281/zenodo.10051494)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -11,13 +30,13 @@
 
 ## Overview
 
-The materials and methods in this repository support work towards developing the S.T.A.R.S healthcare framework (**S**haring **T**ools and **A**rtefacts for **R**eusable **S**imulations in healthcare).  The code and written materials here demonstrate the application of S.T.A.R.S' version 1 to sharing a `ciw` discrete-event simuilation model and associated research artefacts.  
+The materials and methods in this repository support work towards developing the S.T.A.R.S healthcare framework (**S**haring **T**ools and **A**rtefacts for **R**eusable **S**imulations in healthcare).  The code and written materials here demonstrate the application of S.T.A.R.S' version 1 to sharing a `ciw` discrete-event simuilation model and associated research artefacts.
 
 * All artefacts in this repository are linked to study researchers via ORCIDs;
 * Model code is made available under a GNU Public License version 3;
 * Python dependencies are managed through `conda`;
 * The code builds a Shiny for Python web application that can be used to run the model (web app);
-* The python code itself can be viewed and executed in Jupyter notebooks via [Binder](https://mybinder.org); 
+* The python code itself can be viewed and executed in Jupyter notebooks via [Binder](https://mybinder.org);
 * The model is documented and explained in a quarto website served up by GitHub pages;
 * The materials are deposited and made citatable using Zenodo;
 * The models are sharable with other researchers and the NHS without the need to install software.
@@ -37,7 +56,7 @@ The materials and methods in this repository support work towards developing the
   author       = {Monks, Thomas and
                   Harper, Alison and
                   Heather, Amy},
-  title        = {{Towards Sharing Tools, Artefacts, and Reproducible 
+  title        = {{Towards Sharing Tools, Artefacts, and Reproducible
                    Simulation: a ciw model example}},
   month        = oct,
   year         = 2023,
@@ -54,7 +73,7 @@ This code is part of independent research supported by the National Institute fo
 
 ## Case study model
 
-We reuse a stylised urgent care call centre model that we have [previously published](https://openresearch.nihr.ac.uk/articles/3-48). In the model a caller with urgent care needs arrives at randomly to a call centre. The centre is staffed by call operators who answer calls from a first in first out queue. Patients are triaged, and provided a call designation; for example, whether the patient should be allocated an appointment in primary care with a General Practitioner (family doctor) within 48 hours, or if a call back from a nurse is needed.  Callers that are designated as needing a nurse callback enter a first in first out queue until a nurse is available. 
+We reuse a stylised urgent care call centre model that we have [previously published](https://openresearch.nihr.ac.uk/articles/3-48). In the model a caller with urgent care needs arrives at randomly to a call centre. The centre is staffed by call operators who answer calls from a first in first out queue. Patients are triaged, and provided a call designation; for example, whether the patient should be allocated an appointment in primary care with a General Practitioner (family doctor) within 48 hours, or if a call back from a nurse is needed.  Callers that are designated as needing a nurse callback enter a first in first out queue until a nurse is available.
 
 ## Shiny web app
 
@@ -76,7 +95,7 @@ The python code for the model has been setup to run online in Jupyter notebooks 
 
 ## How to run the model locally
 
-Alternatively you may wish to run the Shiny App locally on your own machine.  
+Alternatively you may wish to run the Shiny App locally on your own machine.
 
 ### Downloading the code
 
@@ -115,4 +134,3 @@ The app will run locally on port 8000 and can be accessed using the following UR
 ```
 http://127.0.0.1:8000
 ```
-
