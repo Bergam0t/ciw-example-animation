@@ -284,7 +284,7 @@ def server(input: Inputs, output: Outputs, session: Session):
                                      chance_callback=input.chance_callback())
         
         # run multiple replications
-        results = multiple_replications(user_experiment, n_reps=input.n_reps())
+        results, logs = multiple_replications(user_experiment, n_reps=input.n_reps())
 
         # Renaming metrics
         metrics = {

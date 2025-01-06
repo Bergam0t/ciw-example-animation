@@ -175,9 +175,12 @@ def single_run(experiment,
     # end of run results: calculate mean nurse utilisation
     run_results['04_nurse_util'] = \
         (sum(nurse_servicetimes) / (rc_period * experiment.n_nurses)) * 100.0
-    
+
+    event_log = pd.DataFrame()
+    event_log = recs
+
     # return the results from the run of the model
-    return run_results
+    return run_results, event_log
 
 def multiple_replications(experiment, 
                           rc_period=RESULTS_COLLECTION_PERIOD,
@@ -203,11 +206,11 @@ def multiple_replications(experiment,
     '''
 
     # loop over single run to generate results dicts in a python list.
-    results = [single_run(experiment, rc_period) for rep in range(n_reps)]
-        
+    results = [single_run(experiment, rc_period)[0] for rep in range(n_reps)]
+    logs = [single_run(experiment, rc_period)[1] for rep in range(n_reps)]
+
     # format and return results in a dataframe
     df_results = pd.DataFrame(results)
     df_results.index = np.arange(1, len(df_results)+1)
     df_results.index.name = 'rep'
-    return df_results
-
+    return df_results, logs
