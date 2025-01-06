@@ -14,6 +14,10 @@ def event_log_from_ciw_recs(ciw_recs_obj, node_name_list):
     the service end date is when the resource use ends
     the server ID is a resource use ID
 
+    Returns:
+        # make sure to mention here how the naming of the different
+        # steps will be determined from the node_name_list
+
     """
     entity_ids = list(set([log.id_number for log in ciw_recs_obj]))
 

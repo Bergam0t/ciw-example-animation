@@ -11,6 +11,7 @@ TODO:
 - docstring for `event_log_from_ciw_recs` function
 - add a background to the animation
 - incorporate the animation into the app
+- test whether this works with a more complex model with optional steps - will the node name list approach break? Do we need to pass this as a dict instead?
 
 # Original Repository readme below this line
 
