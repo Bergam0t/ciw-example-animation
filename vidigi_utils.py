@@ -43,7 +43,7 @@ def event_log_from_ciw_recs(ciw_recs_obj, node_name_list):
             {'patient': entity_id,
              'pathway': 'Model',
              'event_type': 'queue',
-             'event': f"{node_name_list[i]}_wait_begins",
+             'event': f"{node_name_list[event.node-1]}_wait_begins",
              'time': event.arrival_date
                 }
             )
@@ -52,7 +52,7 @@ def event_log_from_ciw_recs(ciw_recs_obj, node_name_list):
                 {'patient': entity_id,
                 'pathway': 'Model',
                 'event_type': 'resource_use',
-                'event': f"{node_name_list[i]}_begins",
+                'event': f"{node_name_list[event.node-1]}_begins",
                 'time': event.service_start_date,
                 'resource_id': event.server_id}
             )
@@ -61,7 +61,7 @@ def event_log_from_ciw_recs(ciw_recs_obj, node_name_list):
                 {'patient': entity_id,
                 'pathway': 'Model',
                 'event_type': 'resource_use',
-                'event': f"{node_name_list[i]}_ends",
+                'event': f"{node_name_list[event.node-1]}_ends",
                 'time': event.service_end_date,
                 'resource_id': event.server_id}
             )
