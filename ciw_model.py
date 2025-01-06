@@ -176,11 +176,8 @@ def single_run(experiment,
     run_results['04_nurse_util'] = \
         (sum(nurse_servicetimes) / (rc_period * experiment.n_nurses)) * 100.0
 
-    event_log = pd.DataFrame()
-    event_log = recs
-
     # return the results from the run of the model
-    return run_results, event_log
+    return run_results, recs
 
 def multiple_replications(experiment,
                           rc_period=RESULTS_COLLECTION_PERIOD,
