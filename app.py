@@ -11,6 +11,7 @@ import plotly.graph_objects as go
 import pandas as pd
 from pathlib import Path
 from faicons import icon_svg
+import asyncio
 
 # Import the wrapper objects for model interaction.
 from ciw_model import Experiment, multiple_replications, RESULTS_COLLECTION_PERIOD
@@ -368,7 +369,7 @@ def server(input: Inputs, output: Outputs, session: Session):
         event_position_df = pd.DataFrame([
                     {'event': 'arrival',
                      'x':  30, 'y': 350,
-                     'label': ""},
+                     'label': "Arrival"},
 
                     {'event': 'operator_wait_begins',
                      'x':  205, 'y': 270,
@@ -390,7 +391,7 @@ def server(input: Inputs, output: Outputs, session: Session):
 
                     {'event': 'exit',
                      'x':  270, 'y': 10,
-                     'label': ""}
+                     'label': "Exit"}
 
                 ])
 
@@ -401,7 +402,7 @@ def server(input: Inputs, output: Outputs, session: Session):
         event_log = event_log_from_ciw_recs(logs_run_1, node_name_list=["operator", "nurse"])
 
         # Create animation
-
+        # Output is a plotly fig object
         return animate_activity_log(
                 event_log=event_log,
                 event_position_df= event_position_df,
@@ -548,9 +549,8 @@ def server(input: Inputs, output: Outputs, session: Session):
         # see https://forum.posit.co/t/plotly-animation-frame-does-not-work-in-shiny/195062
         # Using approach from Secret-Ambush in this thread
         # https://forum.posit.co/t/animated-plotly-graph-in-pyshiny-express/189796
-        fig = create_animation(replication_logs())
-        # animation_fig.set(fig)
-        return ui.HTML(fig.to_html(auto_play=False))
+
+        return animation_fig()
 
     @render.text
     @reactive.event(input.run_sim)
@@ -627,11 +627,18 @@ def server(input: Inputs, output: Outputs, session: Session):
         # helps with the feeling of waiting for simulation to complete
         replication_results.set([])
         replication_logs.set([])
-        ui.notification_show("Simulation running. Please wait", type='warning')
+        animation_fig.set([])
+        ui.notification_show("Simulation running. Please wait", type='warning', duration=999,
+                             id="sim_running_notification")
         results, logs = run_simulation()
         replication_results.set(results)
         replication_logs.set(logs)
-        ui.notification_show("Simulation complete.", type='message')
+
+        animation_fig.set(ui.HTML(create_animation(replication_logs()).to_html(auto_play=False)))
+        # Quick sleep to ensure the animation resets on the page before message displayed
+        await asyncio.sleep(3)
+        ui.notification_remove("sim_running_notification")
+        ui.notification_show("Simulation complete.", type='message', duration=5)
 
     @reactive.Effect
     def _():
