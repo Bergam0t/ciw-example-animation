@@ -221,7 +221,7 @@ app_ui = ui.page_fluid(
                         ui.input_slider(id="n_operators",
                                         label="Call operators",
                                         min=1,
-                                        max=40,
+                                        max=20,
                                         value=13,
                                         ticks=False),
                         "Number of call operators on duty"
@@ -372,20 +372,20 @@ def server(input: Inputs, output: Outputs, session: Session):
                      'label': "Arrival"},
 
                     {'event': 'operator_wait_begins',
-                     'x':  205, 'y': 270,
+                     'x':  220, 'y': 270,
                      'label': "Waiting for Operator"},
 
                     {'event': 'operator_begins',
-                     'x':  205, 'y': 210,
+                     'x':  220, 'y': 210,
                      'resource':'n_operators',
                      'label': "Speaking to operator"},
 
                     {'event': 'nurse_wait_begins',
-                     'x':  205, 'y': 110,
+                     'x':  220, 'y': 110,
                      'label': "Waiting for Nurse"},
 
                     {'event': 'nurse_begins',
-                     'x':  205, 'y': 50,
+                     'x':  220, 'y': 50,
                      'resource':'n_nurses',
                      'label': "Speaking to Nurse"},
 
