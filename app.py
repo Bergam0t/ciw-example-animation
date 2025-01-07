@@ -35,7 +35,7 @@ The web app is hosted on a free tier of shinyapps.io.
 
 This model has been adapted to demonstrate the usage of the [vidigi](https://github.com/Bergam0t/vidigi) package with ciw.
 
-Many thanks to the original authors for making this model and web app available!
+Many thanks to the original authors ([Thomas Monks](https://github.com/TomMonks); [Alison Harper](https://github.com/AliHarp) and [Amy Heather](https://github.com/amyheather)) for making this model and web app available!
 """
 
 INTRO = """
