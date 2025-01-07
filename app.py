@@ -29,12 +29,22 @@ It provides a Shiny for Python interface to a `ciw` discrete-event simulation
 model. This allows users to easily experiment with the simulation model.
 
 The web app is hosted on a free tier of shinyapps.io.
+
+---
+
+This model has been adapted to demonstrate the usage of the [vidigi](https://github.com/Bergam0t/vidigi) package with ciw.
+
+Many thanks to the original authors for making this model and web app available!
 """
 
 INTRO = """
 This app is based on a
 [ciw example](https://health-data-science-or.github.io/simpy-streamlit-tutorial/content/03_streamlit/13_ciw_backend.html)
 that simulates a simple call centre model.
+
+It has been modified to incorporate an animation of caller flow created using the [vidigi](https://github.com/Bergam0t/vidigi) package.
+
+This serves as an example to demonstrate that the core elements of the vidigi package can be used with simulation frameworks other than simpy.
 """
 
 MODELDESCRIPTION = """
@@ -82,6 +92,17 @@ Live documentation including STRESS-DES reporting for the model and
 is available at: https://pythonhealthdatascience.github.io/stars-ciw-example/
 """
 
+ANIMATION_TITLE = "### Caller Flow Animation"
+ANIMATION_TOOLTIP = """
+This animation shows the flow of the callers through the call centre.
+Blue dots represent the available resources.
+Icons of people indicate the callers.
+
+All callers first queue for an operator.
+Some exit the system at this point; others will proceed to wait for a callback from a nurse,
+based on the probability of nurse callback specified in the sidebar.
+"""
+
 TABLE_TITLE = "### Tabular results"
 TABLE_TOOLTIP = """
 Average results across replications: mean, standard deviation (std), minimum
@@ -96,7 +117,9 @@ Will be unhelpful if all results are 0.
 """
 GRAPH_INFO = "Please select a performance measure:"
 
-GITHUBLINK = "https://github.com/pythonhealthdatascience/stars-ciw-example/"
+GITHUBLINK = "https://github.com/Bergam0t/ciw-example-animation"
+GITHUBLINK_STARS = "https://github.com/pythonhealthdatascience/stars-ciw-example/"
+GITHUBLINK_VIDIGI = "https://github.com/Bergam0t/vidigi"
 DOCSLINK = "https://pythonhealthdatascience.github.io/stars-ciw-example/"
 
 REP_ERROR = """<p style='color: #CC5500;'><b>Error: Set number of replications
@@ -108,6 +131,8 @@ to 1 or above</b></p>"""
 # -----------------------------------------------------------------------------
 
 app_ui = ui.page_fluid(
+
+    ui.busy_indicators.use(spinners=True, pulse=True, fade=True),
 
     # Page header
     ui.row(
@@ -129,18 +154,28 @@ app_ui = ui.page_fluid(
             6,
             # Title
             ui.h1(
-                "Ciw Urgent Care Call Centre Model", style="margin-top: 10px;"),
+                "Ciw Urgent Care Call Centre Model - Vidigi Animation Test", style="margin-top: 10px;"),
             # Intro section
             ui.markdown(INTRO),
-            # Button to navigate to GitHub code
-            ui.input_action_button(
+             ui.input_action_button(
                 id="github_btn",
-                label="View code on GitHub" ,
+                label="View this repository on GitHub" ,
                 icon=icon_svg("github")
             ),
             ui.tags.script(f"""
                 document.getElementById('github_btn').onclick = function() {{
                     window.open('{GITHUBLINK}', '_blank');
+                }};
+            """),
+            # Button to navigate to GitHub code
+            ui.input_action_button(
+                id="github_btn_orig_repo",
+                label="View original STARS repository on GitHub" ,
+                icon=icon_svg("github")
+            ),
+            ui.tags.script(f"""
+                document.getElementById('github_btn').onclick = function() {{
+                    window.open('{GITHUBLINK_STARS}', '_blank');
                 }};
             """),
             # Button to view model documentation
@@ -152,6 +187,16 @@ app_ui = ui.page_fluid(
             ui.tags.script(f"""
                 document.getElementById('docs_btn').onclick = function() {{
                     window.open('{DOCSLINK}', '_blank');
+                }};
+            """),
+            ui.input_action_button(
+                id="github_btn_vidigi",
+                label="View vidigi on GitHub" ,
+                icon=icon_svg("github")
+            ),
+            ui.tags.script(f"""
+                document.getElementById('github_btn').onclick = function() {{
+                    window.open('{GITHUBLINK_VIDIGI}', '_blank');
                 }};
             """),
             # Resize width to fill space, alongside the fixed logo column
@@ -223,12 +268,16 @@ app_ui = ui.page_fluid(
                                            class_="btn-primary"),
                 ),
                 # Main panel content
+                ui.output_ui("animation_info"),
+                ui.output_ui("flow_animation"),
+                ui.div().add_style("height:20px;"), # Blank space
+
                 ui.output_ui("result_table_info"),
                 ui.output_data_frame("result_table"),
                 ui.div().add_style("height:20px;"),  # Blank space
+
                 ui.output_ui("result_graph_info"),
-                output_widget("histogram"),
-                ui.output_ui("flow_animation")
+                output_widget("histogram")
             ),
         ),
         # Panel for the about page
@@ -274,7 +323,7 @@ def server(input: Inputs, output: Outputs, session: Session):
     # reactive value for replication results.
     replication_results = reactive.Value()
     replication_logs = reactive.Value()
-
+    animation_fig = reactive.Value()
 
     def run_simulation():
         '''
@@ -319,7 +368,7 @@ def server(input: Inputs, output: Outputs, session: Session):
         event_position_df = pd.DataFrame([
                     {'event': 'arrival',
                      'x':  30, 'y': 350,
-                     'label': "Arrival"},
+                     'label': ""},
 
                     {'event': 'operator_wait_begins',
                      'x':  205, 'y': 270,
@@ -341,7 +390,7 @@ def server(input: Inputs, output: Outputs, session: Session):
 
                     {'event': 'exit',
                      'x':  270, 'y': 10,
-                     'label': "Exit"}
+                     'label': ""}
 
                 ])
 
@@ -483,6 +532,28 @@ def server(input: Inputs, output: Outputs, session: Session):
 
     @render.text
     @reactive.event(input.run_sim)
+    def animation_info():
+        title = ui.markdown(ANIMATION_TITLE)
+        # Icon with tooltip
+        info_icon = ui.tooltip(
+            # Class ms-2 adds a margin to the left of the icon
+            icon_svg("circle-info").add_class("ms-2"),
+            ANIMATION_TOOLTIP
+        )
+        return ui.div(title, info_icon, class_="d-flex align-items-center")
+
+    @render.ui
+    def flow_animation():
+        # It appears the animation is not working if passed as a widget
+        # see https://forum.posit.co/t/plotly-animation-frame-does-not-work-in-shiny/195062
+        # Using approach from Secret-Ambush in this thread
+        # https://forum.posit.co/t/animated-plotly-graph-in-pyshiny-express/189796
+        fig = create_animation(replication_logs())
+        # animation_fig.set(fig)
+        return ui.HTML(fig.to_html(auto_play=False))
+
+    @render.text
+    @reactive.event(input.run_sim)
     def result_table_info():
         '''
         Reactive event to when the run simulation button is clicked.
@@ -531,6 +602,7 @@ def server(input: Inputs, output: Outputs, session: Session):
         )
         return content
 
+
     @render_widget
     def histogram():
         '''
@@ -541,15 +613,6 @@ def server(input: Inputs, output: Outputs, session: Session):
         plotly.figure
         '''
         return create_user_filtered_hist(replication_results())
-
-    @render.ui
-    def flow_animation():
-        # It appears the animation is not working if passed as a widget
-        # see https://forum.posit.co/t/plotly-animation-frame-does-not-work-in-shiny/195062
-        # Using approach from Secret-Ambush in this thread
-        # https://forum.posit.co/t/animated-plotly-graph-in-pyshiny-express/189796
-        fig = create_animation(replication_logs())
-        return ui.HTML(fig.to_html())
 
     @reactive.Effect
     @reactive.event(input.run_sim)
