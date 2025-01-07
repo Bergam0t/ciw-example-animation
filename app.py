@@ -13,7 +13,12 @@ from pathlib import Path
 from faicons import icon_svg
 
 # Import the wrapper objects for model interaction.
-from ciw_model import Experiment, multiple_replications
+from ciw_model import Experiment, multiple_replications, RESULTS_COLLECTION_PERIOD
+
+# Import code for animation
+from vidigi_utils import event_log_from_ciw_recs
+from vidigi.animation import animate_activity_log
+
 
 # -----------------------------------------------------------------------------
 # Static text
@@ -223,6 +228,7 @@ app_ui = ui.page_fluid(
                 ui.div().add_style("height:20px;"),  # Blank space
                 ui.output_ui("result_graph_info"),
                 output_widget("histogram"),
+                ui.output_ui("flow_animation")
             ),
         ),
         # Panel for the about page
@@ -267,6 +273,8 @@ def server(input: Inputs, output: Outputs, session: Session):
 
     # reactive value for replication results.
     replication_results = reactive.Value()
+    replication_logs = reactive.Value()
+
 
     def run_simulation():
         '''
@@ -295,7 +303,78 @@ def server(input: Inputs, output: Outputs, session: Session):
         }
         results.columns = results.columns.map(metrics)
 
-        return results
+        return results, logs
+
+    def create_animation(logs):
+        """
+        Returns:
+        -------
+        plotly.figure
+        """
+        # For now, just create from the first run
+        # Could explore dropdown for choosing different runs
+        logs_run_1 = logs[0]
+
+        # Create required event_position_df for vidigi animation
+        event_position_df = pd.DataFrame([
+                    {'event': 'arrival',
+                     'x':  30, 'y': 350,
+                     'label': "Arrival"},
+
+                    {'event': 'operator_wait_begins',
+                     'x':  205, 'y': 270,
+                     'label': "Waiting for Operator"},
+
+                    {'event': 'operator_begins',
+                     'x':  205, 'y': 210,
+                     'resource':'n_operators',
+                     'label': "Speaking to operator"},
+
+                    {'event': 'nurse_wait_begins',
+                     'x':  205, 'y': 110,
+                     'label': "Waiting for Nurse"},
+
+                    {'event': 'nurse_begins',
+                     'x':  205, 'y': 50,
+                     'resource':'n_nurses',
+                     'label': "Speaking to Nurse"},
+
+                    {'event': 'exit',
+                     'x':  270, 'y': 10,
+                     'label': "Exit"}
+
+                ])
+
+        class model_params():
+            n_operators = input.n_operators()
+            n_nurses = input.n_nurses()
+
+        event_log = event_log_from_ciw_recs(logs_run_1, node_name_list=["operator", "nurse"])
+
+        # Create animation
+
+        return animate_activity_log(
+                event_log=event_log,
+                event_position_df= event_position_df,
+                scenario=model_params(),
+                debug_mode=False,
+                setup_mode=False,
+                every_x_time_units=1,
+                include_play_button=True,
+                icon_and_text_size=20,
+                gap_between_entities=8,
+                gap_between_rows=25,
+                plotly_height=700,
+                frame_duration=200,
+                plotly_width=1200,
+                override_x_max=300,
+                # override_y_max=400,
+                limit_duration=RESULTS_COLLECTION_PERIOD,
+                wrap_queues_at=25,
+                step_snapshot_max=75,
+                time_display_units="dhm",
+                display_stage_labels=True,
+            )
 
     def summary_results(replications):
         '''
@@ -463,6 +542,15 @@ def server(input: Inputs, output: Outputs, session: Session):
         '''
         return create_user_filtered_hist(replication_results())
 
+    @render.ui
+    def flow_animation():
+        # It appears the animation is not working if passed as a widget
+        # see https://forum.posit.co/t/plotly-animation-frame-does-not-work-in-shiny/195062
+        # Using approach from Secret-Ambush in this thread
+        # https://forum.posit.co/t/animated-plotly-graph-in-pyshiny-express/189796
+        fig = create_animation(replication_logs())
+        return ui.HTML(fig.to_html())
+
     @reactive.Effect
     @reactive.event(input.run_sim)
     async def _():
@@ -475,8 +563,11 @@ def server(input: Inputs, output: Outputs, session: Session):
         # set to empty - forces shiny to dim output widgets
         # helps with the feeling of waiting for simulation to complete
         replication_results.set([])
+        replication_logs.set([])
         ui.notification_show("Simulation running. Please wait", type='warning')
-        replication_results.set(run_simulation())
+        results, logs = run_simulation()
+        replication_results.set(results)
+        replication_logs.set(logs)
         ui.notification_show("Simulation complete.", type='message')
 
     @reactive.Effect
