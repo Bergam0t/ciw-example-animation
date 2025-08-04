@@ -23,7 +23,12 @@ authors:
     email: a.heather2@exeter.ac.uk
     affiliation: University of Exeter Medical School, Exeter, UK
     orcid: 'https://orcid.org/0000-0002-6596-3479'
-repository-code: 'https://github.com/pythonhealthdatascience/stars-ciw-example'
+  - given-names: Sammi
+    family-names: Rosser
+    email: s.j.rosser@exeter.ac.uk
+    affiliation: University of Exeter Medical School, Exeter, UK
+    orcid: 'https://orcid.org/0000-0002-9552-8988'
+repository-code: 'https://github.com/Bergam0t/ciw-example-animation'
 url: 'https://pythonhealthdatascience.github.io/stars-ciw-example/'
 keywords:
   - Discrete-event simulation
@@ -33,4 +38,6 @@ keywords:
   - ciw
   - quarto
   - simulation
+  - animation
+  - vidigi
 license: GPL-3.0

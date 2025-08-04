@@ -1,17 +1,13 @@
-This repository takes the ciw version of the sample 111 model from STARS and explores building a [vidigi](https://github.com/Bergam0t/vidigi) animation within it.
+This repository takes the ciw version of the sample 111 model from STARS and explores building a [vidigi](https://github.com/hsma-tools/vidigi) animation within it.
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10051494.svg)](https://doi.org/10.5281/zenodo.10051494)
+[![ORCID: Rosser](https://img.shields.io/badge/ORCID-0000--0002--9552--8988-brightgreen)](https://orcid.org/0000-0002-9552-8988)
 
 Key changes made:
 
 - return the output of `sim_engine.get_all_records()` from the `single_run` method
 - update `multiple_replications` method to extract and return these logs
-- write a new `event_log_from_ciw_recs` function to take the output from a single run and produce an event_log dataframe in the order vidigi is expecting
-
-TODO:
-- docstring for `event_log_from_ciw_recs` function
-- add a background to the animation
-- incorporate the animation into the app
-- test whether this works with a more complex model with optional steps - will the node name list approach break? Do we need to pass this as a dict instead?
+- use vidigi's `event_log_from_ciw_recs` function to take the output from a single run and produce an event_log dataframe in the order vidigi is expecting
 
 # Original Repository readme below this line
 

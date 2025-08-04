@@ -4,8 +4,9 @@ from pathlib import Path
 
 # Import the wrapper objects for model interaction.
 from ciw_model import Experiment, multiple_replications
-from vidigi_utils import event_log_from_ciw_recs
+from vidigi.ciw import event_log_from_ciw_recs
 from vidigi.animation import animate_activity_log
+from vidigi.utils import EventPosition, create_event_position_df
 
 N_OPERATORS = 13
 N_NURSES = 9
@@ -37,35 +38,14 @@ event_log_test.head(25)
 
 # Create required event_position_df for vidigi animation
 
-event_position_df = pd.DataFrame([
-                    {'event': 'arrival',
-                     'x':  30, 'y': 350,
-                     'label': "Arrival"},
-
-                    {'event': 'operator_wait_begins',
-                     'x':  205, 'y': 270,
-                     'label': "Waiting for Operator"},
-
-                    {'event': 'operator_begins',
-                     'x':  205, 'y': 210,
-                     'resource':'n_operators',
-                     'label': "Speaking to operator"},
-
-                    {'event': 'nurse_wait_begins',
-                     'x':  205, 'y': 110,
-                     'label': "Waiting for Nurse"},
-
-                    {'event': 'nurse_begins',
-                     'x':  205, 'y': 50,
-                     'resource':'n_nurses',
-                     'label': "Speaking to Nurse"},
-
-                    {'event': 'exit',
-                     'x':  270, 'y': 10,
-                     'label': "Exit"}
-
-                ])
-
+event_position_df = create_event_position_df([
+    EventPosition(event='arrival', x=30, y=350, label="Arrival"),
+    EventPosition(event='operator_wait_begins', x=205, y=270, label="Waiting for Operator"),
+    EventPosition(event='operator_begins', x=205, y=210, resource='n_operators', label="Speaking to operator"),
+    EventPosition(event='nurse_wait_begins', x=205, y=110, label="Waiting for Nurse"),
+    EventPosition(event='nurse_begins', x=205, y=50, resource='n_nurses', label="Speaking to Nurse"),
+    EventPosition(event='depart', x=270, y=10, label="Exit"),
+])
 # Create a suitable class to pass in the resource numbers
 
 class model_params():
@@ -74,7 +54,7 @@ class model_params():
 
 # Create animation
 
-animate_activity_log(
+fig = animate_activity_log(
         event_log=event_log_test,
         event_position_df= event_position_df,
         scenario=model_params(),
@@ -82,9 +62,10 @@ animate_activity_log(
         setup_mode=False,
         every_x_time_units=1,
         include_play_button=True,
-        icon_and_text_size=20,
+        entity_icon_size=20,
+        text_size=20,
         gap_between_entities=8,
-        gap_between_rows=25,
+        gap_between_queue_rows=25,
         plotly_height=700,
         frame_duration=200,
         plotly_width=1200,
@@ -96,3 +77,7 @@ animate_activity_log(
         time_display_units="dhm",
         display_stage_labels=True,
     )
+
+fig.write_html("vidigi_animation_example.html")
+
+fig
