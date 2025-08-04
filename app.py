@@ -120,7 +120,7 @@ GRAPH_INFO = "Please select a performance measure:"
 
 GITHUBLINK = "https://github.com/Bergam0t/ciw-example-animation"
 GITHUBLINK_STARS = "https://github.com/pythonhealthdatascience/stars-ciw-example/"
-GITHUBLINK_VIDIGI = "https://github.com/Bergam0t/vidigi"
+GITHUBLINK_VIDIGI = "https://github.com/hsma-tools/vidigi"
 DOCSLINK = "https://pythonhealthdatascience.github.io/stars-ciw-example/"
 
 REP_ERROR = """<p style='color: #CC5500;'><b>Error: Set number of replications
