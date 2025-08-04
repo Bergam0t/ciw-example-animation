@@ -1,6 +1,7 @@
 This repository takes the ciw version of the sample 111 model from STARS and explores building a [vidigi](https://github.com/hsma-tools/vidigi) animation within it.
 
-[![DOI]([https://zenodo.org/badge/DOI/10.5281/zenodo.10051494.svg)](https://doi.org/10.5281/zenodo.16739768)
+
+[![DOI](https://zenodo.org/badge/912883433.svg)](https://doi.org/10.5281/zenodo.16739767)
 [![ORCID: Rosser](https://img.shields.io/badge/ORCID-0000--0002--9552--8988-brightgreen)](https://orcid.org/0000-0002-9552-8988)
 
 Key changes made:
